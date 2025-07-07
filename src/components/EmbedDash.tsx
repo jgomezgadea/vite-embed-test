@@ -40,7 +40,11 @@ const loadSPAFragment = async (url: string, containerId: string) => {
 
   // Append and execute scripts in order
   for (const script of Array.from(doc.scripts)) {
-    await loadScript(script, container)
+    try {
+      await loadScript(script, container)
+    } catch (error) {
+      console.error(`Failed to load script: ${script.src || 'inline script'}`, error);
+    }
   }
 }
 
@@ -48,7 +52,8 @@ const EmbedDash = () => {
   const containerId = useId()
 
   useEffect(() => {
-    void loadSPAFragment('/dash', containerId)
+    // TODO If the script is executed twice without fully reloading the page, the Dash app will fail.
+    void loadSPAFragment('/free_dashboard', containerId)
   }, [containerId])
 
   return <div id={containerId} style={{ width: '100%', height: '500px', border: 'none' }} />

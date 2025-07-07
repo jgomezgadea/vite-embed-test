@@ -6,12 +6,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/dash': {
-        target: 'http://127.0.0.1:8007',
+      '/static': {
+        target: 'http://127.0.0.1:8002',
         changeOrigin: true,
       },
-      '/static': {
-        target: 'http://127.0.0.1:8007',
+      '/free_dashboard': {
+        target: 'http://127.0.0.1:8002',
+        changeOrigin: true,
+      },
+      '/ps-dashboard': {
+        target: 'http://127.0.0.1:8002',
         changeOrigin: true,
       },
     },
