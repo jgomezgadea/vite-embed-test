@@ -1,4 +1,4 @@
-import {useEffect, useId} from "react";
+import {useEffect, useId, useRef} from "react";
 
 /** Helper to load scripts sequentially */
 const loadScript = (script: HTMLScriptElement, container: HTMLElement) => {
@@ -25,7 +25,10 @@ const loadSPAFragment = async (url: string, containerId: string) => {
     console.error(`Container with id ${containerId} not found.`);
     return;
   }
-  container.innerHTML = '';
+  if (container.childNodes.length > 0) {
+    console.warn(`Container with id ${containerId} already has content. Skipping load.`);
+    return;
+  }
 
   const res = await fetch(url);
   const html = await res.text();
@@ -50,10 +53,12 @@ const loadSPAFragment = async (url: string, containerId: string) => {
 
 const EmbedDash = () => {
   const containerId = useId()
+  const executed = useRef<boolean>(false)
 
   useEffect(() => {
-    // TODO If the script is executed twice without fully reloading the page, the Dash app will fail.
+  if (executed.current) return; // Prevent re-execution
     void loadSPAFragment('/free_dashboard', containerId)
+    executed.current = true;
   }, [containerId])
 
   return <div id={containerId} style={{ width: '100%', height: '500px', border: 'none' }} />
